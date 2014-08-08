@@ -1,0 +1,34 @@
+    exec {
+        "pip-update": command => "sudo pip install --upgrade pip";
+    }
+
+    exec { "easy_install pip":
+        path => "/usr/local/bin:/usr/bin:/bin",
+        require => Package["numpy"],
+        unless => "which pip",
+    }
+
+    pip { 
+        "virtualenv": ensure => installed; 
+        "avro": ensure => installed; 
+    }
+
+    pip($ensure = installed) {
+        case $ensure {
+            installed: {
+                exec { "pip install $name":
+                    path => "/usr/local/bin:/usr/bin:/bin",
+                }
+            }
+            latest: {
+                exec { "pip install --upgrade $name":
+                    path => "/usr/local/bin:/usr/bin:/bin",
+                }
+            }
+            default: {
+                exec { "pip install $name==$ensure":
+                    path => "/usr/local/bin:/usr/bin:/bin",
+                }
+            }
+        }
+    }

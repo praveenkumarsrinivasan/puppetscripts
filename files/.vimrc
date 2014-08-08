@@ -1,0 +1,1 @@
+/home/tyconet06/.vimrc
