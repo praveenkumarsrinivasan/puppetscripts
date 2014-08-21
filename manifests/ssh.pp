@@ -1,9 +1,10 @@
 sshkeys::create_key { 'cloudera':
     home     => '/home/cloudera/',
+    ssh_keytype => 'rsa',
 }
 
-sshkeys::set_authorized_key {'cloudera@tyconet02.tyco.com to cloudera@tyconet03.tyco.com':
+sshkeys::set_authorized_key {'cloudera@tyconet02 to cloudera@tyconet03':
   local_user  => 'cloudera',
-  remote_user => 'cloudera@tyconet03.tyco.com',
+  remote_user => 'cloudera@',
   home        => '/home/cloudera',
 }

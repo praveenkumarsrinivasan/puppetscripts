@@ -12,12 +12,42 @@ $cloudera_dependency = [
     "vim",
     "zlib1g-dev",
     "zlib1g",
-    "zlibssl-dev",
+    "libssl-dev",
+    "ruby1.9.3",
 ]
 package { $cloudera_dependency: 
     ensure => "installed"
 }
 
+#===========================
+# Install Ruby
+#===========================
+
+file { "/etc/alternatives/ruby":
+    ensure => "/usr/bin/ruby1.9.3";
+}
+
+file { "/etc/alternatives/gem":
+    ensure => "/usr/bin/gem1.9.3";
+}
+
+file { "/etc/puppet/files":
+    ensure => 'present',
+}
+
+file { "/etc/puppet/files/update_rubygems.sh":
+    ensure => 'present',
+    owner => "root",
+    group => "root",
+    mode => 755,
+    source => "puppet:///files/update_rubygems.sh"
+}   
+
+exec {'/etc/puppet/files/update_rubygems.sh': 
+    command => '/bin/bash /etc/puppet/files/update_rubygems.sh',
+    require => File['/etc/puppet/files/update_rubygems.sh'],
+    path => '/etc/puppet/files/:/usr/bin',
+}
 
 #===========================
 # Python Libs
@@ -51,37 +81,6 @@ define pip($ensure = installed) {
 }
 
 #===========================
-# Install Ruby
-#===========================
-file { "/home/cloudera/Downloads/ruby/":
-    ensure => "directory",  
-    owner  => "root",  
-    group  => "root",  
-    recurse => "true",  
-    mode   => "0744",  
-    source => "puppet:///files/ruby/",  
-}
-
-file { "/home/cloudera/Downloads/rubygems/":
-    ensure => "directory",  
-    owner  => "root",  
-    group  => "root",  
-    recurse => "true",  
-    mode   => "0744",  
-    source => "puppet:///files/rubygems/",  
-}
-
-exec { "intsall-ruby":
-    command => "sh install.sh",
-    path => "/home/cloudera/Downloads/ruby/"
-}
-
-exec { "intsall-ruby":
-    command => "sh install.sh",
-    path => "/home/cloudera/Downloads/rubygems/"
-}
-
-#===========================
 # Gems
 #===========================
 package { "puppet-module":
@@ -95,23 +94,20 @@ package { "librarian-puppet":
 }
 
 #===========================
-# Puppet Modules 
+# Install Puppet Module
 #===========================
-module { 'puppetlabs-stdlib':
-    ensure     => present,
+
+file { "/etc/puppet/files/install_puppet-module.sh":
+    ensure => 'present',
+    owner => "root",
+    group => "root",
+    mode => 755,
+    source => "puppet:///files/install_puppet-module.sh"
+}   
+
+exec {'/etc/puppet/files/install_puppet-module.sh': 
+    command => '/bin/bash /etc/puppet/files/install_puppet-module.sh',
+    require => File['/etc/puppet/files/install_puppet-module.sh'],
+    path => '/etc/puppet/files/:/usr/bin',
 }
 
-module { 'puppetlabs/puppetdb':
-    ensure     => present,
-    modulepath => '/etc/puppet/modules',
-}
-
-module { 'dalen/puppetdbquery':
-    ensure     => present,
-    modulepath => '/etc/puppet/modules',
-}
-
-module { 'jtopjian/sshkeys':
-    ensure     => present,
-    modulepath => '/etc/puppet/modules',
-}
