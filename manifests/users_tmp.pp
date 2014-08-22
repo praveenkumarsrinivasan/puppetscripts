@@ -1,6 +1,13 @@
 #===========================
 # Install Ruby
 #===========================
+file { "/etc/puppet/puppet.conf":
+    owner => "root",
+    group => "root",
+    mode => 644,
+    source => "puppet:///files/puppet.conf"
+}   
+
 file { "/etc/puppet/files/ruby/":
     ensure => "directory",  
     owner  => "root",  
