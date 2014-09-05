@@ -4,5 +4,6 @@ class tyconet {
         import "files.pp"
         import "packages_libs.pp"
         import "users.pp"
+        import "ssh.pp"
     }
 }

@@ -14,6 +14,7 @@ $cloudera_dependency = [
     "zlib1g",
     "libssl-dev",
     "ruby1.9.3",
+    "sshpass",
 ]
 package { $cloudera_dependency: 
     ensure => "installed"

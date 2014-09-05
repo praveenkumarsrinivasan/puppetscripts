@@ -1,0 +1,99 @@
+Master
+    packages
+        sudo apt-get -y install ssh
+        sudo apt-get -y install vim
+        sudo apt-get -y install git
+
+        sudo apt-get -y install zlib1g-dev
+        sudo apt-get -y install zlib1g
+        sudo apt-get -y install libssl-dev
+
+        wget ftp://xyz.lcs.mit.edu/pub/ruby/2.0/ruby-2.0.0-p247.tar.gz
+        tar -xvf ruby-2.0.0-p247.tar.gz
+        ./configure
+        make 
+        sudo make install
+        wget http://production.cf.rubygems.org/rubygems/rubygems-2.4.1.tgz
+        tar -xvf rubygems-2.4.1.tgz
+        sudo ruby setup.rb
+
+        sudo apt-get -y install puppetmaster
+        wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+        sudo dpkg -i puppetlabs-release-precise.deb
+        sudo apt-get update
+        sudo apt-get -y install puppetmaster-passenger
+        sudo apt-get -y install puppetmaster
+        sudo apt-get update
+        sudo puppet resource package puppetmaster ensure=latest
+        sudo service puppetmaster restart
+
+        sudo gem install puppet-module
+        sudo gem install librarian-puppet
+
+        sudo puppet module install puppetlabs-stdlib
+        sudo puppet module install rcoleman-puppet_module
+        sudo puppet module install puppetlabs-puppetdb 
+        sudo puppet module install dalen-puppetdbquery  
+        sudo puppet module install jtopjian-sshkeys
+
+        export RUBYLIB=/etc/puppet/modules/puppet-puppetdbquery/lib:$RUBYLIB
+        sudo puppet resource package puppetdb ensure=latest
+        sudo puppet resource package puppetdb-terminus ensure=latest
+        sudo puppet resource service puppetdb ensure=running enable=true
+
+        sudo vim /etc/puppet/puppetdb.conf
+        [main]
+            server = tyconet06.tyco.com
+            port = 8081
+
+        sudo vim /etc/puppet/puppet.conf
+        [master]
+            storeconfigs = true
+            storeconfigs_backend = puppetdb
+            reports = store,puppetdb
+
+        puppet master --configprint route_file
+        sudo vim ~/.puppet/routes.yaml
+        ---
+        master:
+          facts:
+            terminus: puppetdb
+            cache: yaml
+
+    files
+        add hostnames in /etc/hosts
+    commands
+        sudo service puppetmaster status
+        sudo service puppetmaster start/stop
+        sudo puppet cert --list
+        sudo puppet cert --sign <puppetagent-hostname>
+        mkpasswd -m sha-512
+
+        
+
+Nodes
+    packages
+        sudo apt-get -y install ssh
+        sudo apt-get -y install vim
+        sudo apt-get -y install puppet
+        
+        wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+        sudo dpkg -i puppetlabs-release-precise.deb
+        sudo apt-get update
+        sudo apt-get -y install puppet
+        sudo apt-get update
+        sudo puppet resource package puppet ensure=latest
+
+    files
+        add hostnames in /etc/hosts
+        change start=yes in /etc/default/puppet to start client at boot
+    commands
+        sudo puppet agent --test --server='puppetmaster-hostname'
+
+
+
+
+sudo apt-get -y install pwgen
+pwgen -s -1 | mkpasswd -m sha-512 -s
+
+
